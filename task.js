@@ -17,16 +17,7 @@ function sum(check) {
 }
 
 function isPriceValid(price) {
-  if (price.length === 0) {
-    return false;
-  }
-
-  if (!/^\d.*\d$/.test(price)) {
-    return false;
-  }
-
-  const digitsOnly = price.replace(/[.,]/g, "");
-  if (!/^\d+$/.test(digitsOnly)) {
+  if (price == "0") {
     return false;
   }
 
@@ -34,17 +25,30 @@ function isPriceValid(price) {
   let rubles = "";
   let kopecks = "";
   if (lastDotIndex == -1) {
-    rubles = price;
+    if (/^0\d*/.test(price)) {
+      return false;
+    }
+
+    if (!(parseInt(price) >= 1 && parseInt(price) <= 999)) {
+      return false;
+    }
   } else {
     rubles = price.slice(0, lastDotIndex);
     kopecks = price.slice(lastDotIndex + 1);
 
-    if (rubles.length > 3) {
-      return /^\d{1,3}(\.\d{3})*$/.test(rubles);
+    if (rubles.length == 0) {
+      return false;
     }
 
-    if (kopecks.length == 3 && rubles != "0") {
-      rubles = rubles + kopecks;
+    if (/^0[0-9\.]+/.test(rubles)) {
+      return false;
+    }
+
+    if (
+      kopecks.length == 3 &&
+      /^\d{1,3}(\.\d{3})*$/.test(price) &&
+      rubles[0] != 0
+    ) {
       return true;
     }
 
@@ -55,14 +59,10 @@ function isPriceValid(price) {
     if (kopecks == "00") {
       return false;
     }
-  }
 
-  if (/^0/.test(rubles) && rubles != "0") {
-    return false;
-  }
-
-  if (rubles.length > 3) {
-    return /^\d{1,3}(\.\d{3})*$/.test(rubles);
+    if (rubles.length > 3) {
+      return /^\d{1,3}(\.\d{3})*$/.test(rubles);
+    }
   }
 
   return true;
